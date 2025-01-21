@@ -1,0 +1,32 @@
+From 411e5b344642ebc82190fd8b125db512e5b449d1 Mon Sep 17 00:00:00 2001
+From: Cedric Koch-Hofer <cedric.koch.hofer@gmail.com>
+Date: Wed, 15 May 2024 15:27:42 +0000
+Subject: [PATCH] info: fix ULTs stacks dump works only once
+
+1/one returned value must be tested instead of 0 to detect that last
+"parked" XStream is done in ABTI_info_check_print_all_thread_stacks()
+and thus that print_stack_flag can be reset to PRINT_STACK_FLAG_UNSET to
+allow for a next dump to be started.
+
+DAOS-14248 ticket, Argobots issue pmodels#393.
+
+Signed-off-by: Cedric Koch-Hofer <cedric.koch-hofer@intel.com>
+Co-authored-by: Bruno Faccini <bruno.faccini@intel.com>
+---
+ src/info.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/info.c b/src/info.c
+index 4127edf1..5e5bb4b8 100644
+--- a/src/info.c
++++ b/src/info.c
+@@ -1097,7 +1097,8 @@ void ABTI_info_check_print_all_thread_stacks(void)
+ 
+     /* Decrement the barrier value. */
+     int dec_value = ABTD_atomic_fetch_sub_int(&print_stack_barrier, 1);
+-    if (dec_value == 0) {
++    /* previous value should be 1 ! */
++    if (dec_value == 1) {
+         /* The last execution stream resets the flag. */
+         ABTD_atomic_release_store_int(&print_stack_flag,
+                                       PRINT_STACK_FLAG_UNSET);
