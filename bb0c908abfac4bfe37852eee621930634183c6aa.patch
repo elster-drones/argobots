@@ -1,0 +1,34 @@
+From bb0c908abfac4bfe37852eee621930634183c6aa Mon Sep 17 00:00:00 2001
+From: Cedric Koch-Hofer <cedric.koch.hofer@gmail.com>
+Date: Mon, 9 Sep 2024 12:51:43 +0000
+Subject: [PATCH] configure: Restore libuwnind support
+
+The commit 3196bbf3d05702b7f124ac7cd6a13ad9cf585caf removed the support
+of libunwind.
+
+DAOS-15596 ticket, Update Argobots to 1.2
+
+Signed-off-by: Cedric Koch-Hofer <cedric.koch-hofer@intel.com>
+---
+ configure.ac | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 9c5e4739..8e4f134b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -259,6 +259,14 @@ AC_ARG_WITH([libunwind],
+     AS_HELP_STRING([--with-libunwind=PATH],
+         [specify path where libunwind include directory and lib directory can be found]))
+ 
++# --enable-stack-unwind
++AC_ARG_ENABLE([stack-unwind],
++[  --enable-stack-unwind@<:@=OPTS@:>@ enable stack unwinding, which is disabled by default.
++        yes|verbose  - enable stack unwinding.  Dump the raw stack information too
++        unwind-only  - enable stack unwinding.  Do not dump the raw stack information
++        no|none      - disable stack unwinding
++],,[enable_stack_unwind=no])
++
+ # --with-papi
+ AC_ARG_WITH([papi],
+     AS_HELP_STRING([--with-papi=PATH],
